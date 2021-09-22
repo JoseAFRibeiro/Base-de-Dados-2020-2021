@@ -68,23 +68,54 @@ DROP COLUMN numVotes;
 #title_basics + title_rating = Title
 #title_crew = Crew
 #title_principals = principals
-LOAD DATA LOCAL INFILE "C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/name_basics.tsv" INTO TABLE Person;
-LOAD DATA LOCAL INFILE 
+SET autocommit=0;
+SET unique_checks=0;
+SET foreign_key_checks=0;
+FLUSH TABLES;
+LOCK TABLES Person WRITE;
+LOAD DATA LOCAL INFILE "C:/ProgramData/MySQL/MySQL Server
+8.0/Uploads/name_basics.tsv" INTO TABLE Person
+FIELDS TERMINATED BY '\t';
+LOCK TABLES Crew WRITE;
+LOAD DATA LOCAL INFILE
 "C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/title_crew.tsv"
- INTO TABLE 
- Crew;
- LOAD DATA LOCAL INFILE 
-"C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/title_principals.tsv"
- INTO TABLE 
- Principals;
- LOAD DATA LOCAL INFILE 
+INTO TABLE
+Crew
+FIELDS TERMINATED BY '\t' IGNORE 1 LINES;
+LOCK TABLES Principals WRITE;
+LOAD DATA LOCAL INFILE
+"C:/ProgramData/MySQL/MySQL Server
+8.0/Uploads/title_principals.tsv"
+INTO TABLE
+Principals
+FIELDS TERMINATED BY '\t' IGNORE 1 LINES ;
+LOCK TABLES Title WRITE;
+LOAD DATA LOCAL INFILE
 "C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/title_basics.tsv"
- INTO TABLE 
- Title;
-  LOAD DATA LOCAL INFILE 
-"C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/title_ratings.tsv"
- INTO TABLE 
- Ratings;
+INTO TABLE
+Title
+FIELDS TERMINATED BY '\t' IGNORE 1 LINES;
 #DROP DATABASE trabalho_bd;
+LOCK TABLES Ratings WRITE;
+ LOAD DATA LOCAL INFILE
+"C:/ProgramData/MySQL/MySQL Server 8.0/Uploads/title_ratings.tsv"
+INTO TABLE
+Ratings
+FIELDS TERMINATED BY '\t' IGNORE 1 LINES;
+
+COMMIT;
+
+SET unique_checks=1;
+SET foreign_key_checks=1;
+SET autocommit = 1;
+
+UNLOCK TABLES;
+
+CREATE VIEW Conteudos AS
+SELECT t.tconst, t.titleType, t.primaryTitle, t.originalTitle,
+t.isAdult, t.startYear, t.endYear, t.runtimeMinutes, t.genres,
+r.averageRating, r.numVotes
+FROM Title t INNER JOIN Ratings r ON t.tconst = r.tconst;
+
 select count(tconst) from principals;
 /* erros 1265 e 1452
